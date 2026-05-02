@@ -19,10 +19,22 @@ full_hash = hash_text.hexdigest().upper() # it will print computer to human read
 
 first5, tail = full_hash[:5], full_hash[5:] # Slicing (k-anonymity)
 
-url = 'https://api.pwnedpasswords.com/range/' + first5
+url = 'https://api.pwnedpasswords.com/range/' + first5 # api url
 
 response = requests.get(url)
     
 if response.status_code != 200:
-        raise RuntimeError(f"Error fetching: {response.status_code}, check the API and try again.") 
+        raise RuntimeError(f"Error fetching: {response.status_code}, check the API and try again.") # response and error tracking 
          
+hash_match = response.text
+
+lines = hash_match.splitlines() # splitlines helps in putting the api response individually rather than as /n
+
+for line in lines:
+        h, count = line.split(':') # unpacking and colon separator
+        if h == tail:              # matching
+                 print(f"Match found! Your password was leaked {count} times.")
+                 break 
+else:
+    # This 'else' runs only if the loop finishes without hitting 'break'
+    print("Safe! No matching hash found.")
